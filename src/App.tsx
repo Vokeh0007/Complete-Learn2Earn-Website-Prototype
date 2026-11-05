@@ -25,6 +25,7 @@ import {
   SectorsPage,
   ServiceDetailPage,
   SolutionsPage,
+  WorkspaceLoginPage,
 } from "./pages"
 import {
   Button,
@@ -69,6 +70,7 @@ function AppShell() {
             element={<ProgrammeDetailPage />}
           />
           <Route path="/dashboards" element={<DashboardPage />} />
+          <Route path="/workspace-login" element={<WorkspaceLoginPage />} />
           <Route
             path="/dashboards/:dashboardType"
             element={<DashboardPage />}
@@ -106,15 +108,10 @@ function AppShell() {
             illustrative dummy data.
           </p>
           <div className="button-row">
-            <Button to="/dashboards/learner" onClick={() => setLogin(false)}>
-              Learner preview
+            <Button to="/workspace-login" onClick={() => setLogin(false)}>
+              Open workspace login
             </Button>
-            <Button to="/dashboards/instructor" variant="secondary" onClick={() => setLogin(false)}>
-              Instructor preview
-            </Button>
-            <Button to="/dashboards/institution" variant="text" onClick={() => setLogin(false)}>
-              Institution preview
-            </Button>
+            <Button to="/dashboards" variant="secondary" onClick={() => setLogin(false)}>Browse previews</Button>
           </div>
         </div>
       </Modal>

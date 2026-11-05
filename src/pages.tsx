@@ -1313,12 +1313,75 @@ function LearnerTable({ query, setQuery, learners, compact = false }: { query: s
   return <div className="dashboard-register"><div className="register-toolbar"><div><p className="eyebrow">Sample learner register</p>{!compact && <h2>Course administration</h2>}</div>{!compact && <label className="dashboard-search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search learner, course or status" /></label>}</div><div className="register-table-wrap"><table className="register-table"><thead><tr>{["Learner", "Course", "Enrollment date", "Attendance", "Fee amount", "Amount paid", "Payment status"].map((heading) => <th key={heading}>{heading}</th>)}</tr></thead><tbody>{learners.map((learner) => <tr key={learner.email}><td><div className="learner-cell"><span>{learner.initials}</span><div><strong>{learner.name}</strong><small>{learner.email}</small></div></div></td><td>{learner.course}<small className="table-progress">{learner.progress}% progress</small></td><td>{learner.enrolled}</td><td><strong>{learner.attendance}</strong></td><td>{learner.fee}</td><td>{learner.paid}</td><td><span className={`status-pill ${learner.status.toLowerCase().replace("-", "")}`}>{learner.status}</span></td></tr>)}</tbody></table></div></div>
 }
 
-function InstitutionWorkspace() {
+function InstitutionWorkspace({ active }: { active: string }) {
+  if (active === "Cohorts") {
+    return <DashboardPlaceholder title="Cohort portfolio" copy="Review the sample groups attached to each commissioned learning programme." icon={Users} items={["Operations team · Workplace Safety · 18 learners", "Field team · Digital Extension · 24 learners", "Member group · Professional Practice · 6 learners"]} />
+  }
+  if (active === "Reporting") {
+    return <DashboardPlaceholder title="Illustrative reporting" copy="A future reporting area for agreed participation, completion, and learning evidence." icon={BarChart3} items={["Participation summary · 48 sample learners", "Completion trend · 84% illustrative rate", "Assessment movement · Example only"]} />
+  }
+  if (active === "Calendar") {
+    return <DashboardPlaceholder title="Programme calendar" copy="Coordinate sample cohort milestones, live sessions, and reporting checkpoints." icon={CalendarDays} items={["Workplace Safety workshop · Thursday, 10:00", "Digital Extension check-in · Friday, 15:30", "Illustrative report review · 30 May"]} />
+  }
   return <div className="workspace-body"><div className="dashboard-metric-grid"><DashboardMetric icon={Users} value="48" label="Sample participants" detail="3 active cohort groups" /><DashboardMetric icon={BarChart3} value="84%" label="Completion rate" detail="Illustrative reporting only" /><DashboardMetric icon={CircleDollarSign} value="KES 412k" label="Fees recorded" detail="Dummy finance snapshot" /><DashboardMetric icon={CheckCircle2} value="3" label="Active programmes" detail="Across 2 sample teams" /></div><div className="dashboard-two-column"><section className="dashboard-surface dashboard-wide"><div className="dashboard-surface-head"><div><p className="eyebrow">Cohort oversight</p><h2>Programme groups</h2></div><Badge>Example report</Badge></div><div className="cohort-card-grid">{[["Operations team", "Workplace Safety", "92%", "18 learners"], ["Field team", "Digital Extension", "76%", "24 learners"], ["Member group", "Professional Practice", "54%", "6 learners"]].map(([group, course, progress, people]) => <div className="cohort-card" key={group}><span className="cohort-card-icon"><Users size={16} /></span><strong>{group}</strong><small>{course} · {people}</small><div className="progress-track"><span style={{ width: progress }} /></div><div className="dashboard-progress-label"><span>Sample completion</span><strong>{progress}</strong></div></div>)}</div></section><section className="dashboard-surface"><div className="dashboard-surface-head"><div><p className="eyebrow">Illustrative reporting</p><h2>Learning pulse</h2></div></div><div className="mini-chart" aria-label="Illustrative learning pulse chart">{[42, 58, 52, 72, 66, 84, 78].map((height, index) => <span key={index} style={{ height: `${height}%` }} />)}</div><p className="fine">Not a live report. Figures are visual placeholders for a future reporting workflow.</p></section></div></div>
 }
 
 function DashboardPlaceholder({ title, copy, icon: Icon, items }: { title: string; copy: string; icon: typeof CalendarDays; items: string[] }) {
   return <div className="dashboard-placeholder dashboard-surface"><span className="placeholder-icon"><Icon size={22} /></span><p className="eyebrow">Mock workspace</p><h2>{title}</h2><p>{copy}</p><div className="placeholder-list">{items.map((item) => <div key={item}><CheckCircle2 size={16} /><strong>{item}</strong></div>)}</div><Badge>Frontend-only sample</Badge></div>
+}
+
+export function WorkspaceLoginPage() {
+  const navigate = useNavigate()
+  const [role, setRole] = useState<DashboardRole>("learner")
+  const [submitted, setSubmitted] = useState(false)
+  const roleCopy = {
+    learner: ["Learner access", "Continue your courses, activities, and learning progress."],
+    instructor: ["Instructor access", "Manage cohorts, learner records, and assessment reviews."],
+    institution: ["Institution access", "Review programme participation and illustrative reporting."],
+  }[role]
+  if (submitted) {
+    return (
+      <section className="workspace-login-page">
+        <div className="workspace-login-card dashboard-surface">
+          <span className="placeholder-icon"><CheckCircle2 size={22} /></span>
+          <p className="eyebrow">Preview access granted</p>
+          <h1>Welcome to the mock workspace.</h1>
+          <p className="workspace-login-copy">No credentials were verified and no account was created. This frontend preview simply demonstrates the {role} experience.</p>
+          <Button to={`/dashboards/${role}`}>Open {role} dashboard <ArrowRight size={16} /></Button>
+          <Button variant="text" onClick={() => setSubmitted(false)}>Choose another role</Button>
+        </div>
+      </section>
+    )
+  }
+  return (
+    <section className="workspace-login-page">
+      <div className="workspace-login-card dashboard-surface">
+        <div className="workspace-login-heading">
+          <div>
+            <p className="eyebrow">Learn2Earn workspace</p>
+            <h1>Sign in to your learning space.</h1>
+          </div>
+          <Badge>Frontend prototype</Badge>
+        </div>
+        <p className="workspace-login-copy">Choose a role and enter any sample details to preview the experience. This form does not authenticate, store, or send data.</p>
+        <div className="workspace-role-tabs" role="tablist" aria-label="Workspace role">
+          {(["learner", "instructor", "institution"] as DashboardRole[]).map((option) => (
+            <button key={option} className={role === option ? "is-active" : ""} onClick={() => setRole(option)} role="tab" aria-selected={role === option}>{option}</button>
+          ))}
+        </div>
+        <div className="workspace-login-role">
+          <span className="dashboard-choice-icon"><Users size={20} /></span>
+          <div><strong>{roleCopy[0]}</strong><small>{roleCopy[1]}</small></div>
+        </div>
+        <form className="workspace-login-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true) }}>
+          <label>Email address<input type="email" placeholder={`${role}@learn2earn.example`} required /></label>
+          <label>Password<input type="password" placeholder="Any sample password" required /></label>
+          <div className="workspace-login-actions"><Button type="submit">Continue to preview <ArrowRight size={16} /></Button><Button to="/" variant="text">Back to public site</Button></div>
+        </form>
+        <p className="fine">Demo only · No live LMS, payment, account, or reporting connection.</p>
+      </div>
+    </section>
+  )
 }
 
 function DashboardLanding() {
@@ -1345,7 +1408,7 @@ function DashboardRolePage({ role }: { role: DashboardRole }) {
   const [active, setActive] = useState("Overview")
   const [toast, setToast] = useState(false)
   const roleName = role === "learner" ? "Learner" : role === "instructor" ? "Instructor" : "Institution"
-  return <section className="dashboard-app"><div className="dashboard-app-inner"><DashboardSidebar role={role} active={active} onSelect={setActive} /><main className="dashboard-main"><DashboardTopbar role={role} onNotify={() => setToast(true)} /><div className="dashboard-mobile-switch"><Link to="/dashboards/learner">Learner</Link><Link to="/dashboards/instructor">Instructor</Link><Link to="/dashboards/institution">Institution</Link></div><div className="dashboard-context"><div><Badge>Mock data only</Badge><p>Connected prototype · {roleName} experience</p></div><Button to="/dashboards" variant="secondary">All dashboards</Button></div>{role === "learner" ? <LearnerWorkspace active={active} /> : role === "instructor" ? <InstructorWorkspace active={active} /> : <InstitutionWorkspace />}{toast && <button className="dashboard-toast" onClick={() => setToast(false)}><Bell size={15} /> 3 sample notifications · dismiss</button>}</main></div></section>
+  return <section className="dashboard-app"><div className="dashboard-app-inner"><DashboardSidebar role={role} active={active} onSelect={setActive} /><main className="dashboard-main"><DashboardTopbar role={role} onNotify={() => setToast(true)} /><div className="dashboard-mobile-switch"><Link to="/dashboards/learner">Learner</Link><Link to="/dashboards/instructor">Instructor</Link><Link to="/dashboards/institution">Institution</Link></div><div className="dashboard-context"><div><Badge>Mock data only</Badge><p>Connected prototype · {roleName} experience</p></div><Button to="/dashboards" variant="secondary">All dashboards</Button></div>{role === "learner" ? <LearnerWorkspace active={active} /> : role === "instructor" ? <InstructorWorkspace active={active} /> : <InstitutionWorkspace active={active} />}{toast && <button className="dashboard-toast" onClick={() => setToast(false)}><Bell size={15} /> 3 sample notifications · dismiss</button>}</main></div></section>
 }
 
 function LegacyDashboardPage() {
