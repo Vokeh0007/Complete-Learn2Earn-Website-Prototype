@@ -218,10 +218,17 @@ function NavDropdown({
 
 export function SiteHeader({ onLogin }: { onLogin: () => void }) {
   const [mobile, setMobile] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   useEffect(() => setMobile(false), [location.pathname])
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 24)
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
   return (
-    <header className="site-header">
+    <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="nav-shell">
         <Link className="wordmark" to="/">
           <strong>Learn2Earn</strong>
