@@ -1,0 +1,10 @@
+{
+  "description": "A responsive website prototype showcasing Africa-first institutional training solutions for organisations to explore services, sectors, and request consultations.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
