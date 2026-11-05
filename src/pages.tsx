@@ -1338,12 +1338,14 @@ export function DashboardPage() {
   const { dashboardType } = useParams()
   if (dashboardType && !["learner", "instructor", "institution"].includes(dashboardType)) return <NotFoundPage />
   if (!dashboardType) return <DashboardLanding />
-  const role = dashboardType as DashboardRole
+  return <DashboardRolePage role={dashboardType as DashboardRole} />
+}
+
+function DashboardRolePage({ role }: { role: DashboardRole }) {
   const [active, setActive] = useState("Overview")
   const [toast, setToast] = useState(false)
-  const currentRole = dashboardType ? role : "learner"
-  const roleName = currentRole === "learner" ? "Learner" : currentRole === "instructor" ? "Instructor" : "Institution"
-  return <section className="dashboard-app"><div className="dashboard-app-inner"><DashboardSidebar role={currentRole} active={active} onSelect={setActive} /><main className="dashboard-main"><DashboardTopbar role={currentRole} onNotify={() => setToast(true)} /><div className="dashboard-mobile-switch"><Link to="/dashboards/learner">Learner</Link><Link to="/dashboards/instructor">Instructor</Link><Link to="/dashboards/institution">Institution</Link></div><div className="dashboard-context"><div><Badge>Mock data only</Badge><p>Connected prototype · {roleName} experience</p></div><Button to="/dashboards" variant="secondary">All dashboards</Button></div>{currentRole === "learner" ? <LearnerWorkspace active={active} /> : currentRole === "instructor" ? <InstructorWorkspace active={active} /> : <InstitutionWorkspace />}{toast && <button className="dashboard-toast" onClick={() => setToast(false)}><Bell size={15} /> 3 sample notifications · dismiss</button>}</main></div></section>
+  const roleName = role === "learner" ? "Learner" : role === "instructor" ? "Instructor" : "Institution"
+  return <section className="dashboard-app"><div className="dashboard-app-inner"><DashboardSidebar role={role} active={active} onSelect={setActive} /><main className="dashboard-main"><DashboardTopbar role={role} onNotify={() => setToast(true)} /><div className="dashboard-mobile-switch"><Link to="/dashboards/learner">Learner</Link><Link to="/dashboards/instructor">Instructor</Link><Link to="/dashboards/institution">Institution</Link></div><div className="dashboard-context"><div><Badge>Mock data only</Badge><p>Connected prototype · {roleName} experience</p></div><Button to="/dashboards" variant="secondary">All dashboards</Button></div>{role === "learner" ? <LearnerWorkspace active={active} /> : role === "instructor" ? <InstructorWorkspace active={active} /> : <InstitutionWorkspace />}{toast && <button className="dashboard-toast" onClick={() => setToast(false)}><Bell size={15} /> 3 sample notifications · dismiss</button>}</main></div></section>
 }
 
 function LegacyDashboardPage() {
